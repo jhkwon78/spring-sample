@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,29 @@ public class MainController {
     @RequestMapping(value = "/some", method = RequestMethod.GET)
     public ResponseEntity<String> some() {
         return new ResponseEntity<String>("good", HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value = "/dologin", method = RequestMethod.POST)
+    public String login(HttpSession session, ModelMap modelMap,
+                        @RequestParam("email") String email,
+                        @RequestParam("password") String password) throws Exception {
+
+
+        if (password.equalsIgnoreCase("admin")) {
+            modelMap.addAttribute("email", email);
+            session.setAttribute("email", email);
+            return "welcome";
+        }
+
+        return "redirect:/pages/login_error.html";
+    }
+
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String admin(HttpSession session, ModelMap modelMap) {
+        String email = (String)session.getAttribute("email");
+        modelMap.addAttribute("email", email);
+        return "admin";
     }
 }
 
