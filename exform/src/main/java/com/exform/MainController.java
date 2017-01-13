@@ -3,7 +3,10 @@ package com.exform;
 import com.exform.domain.User;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,11 +28,18 @@ import java.util.Locale;
 
 
 @Controller
+@PropertySource("classpath:some.properties")
 public class MainController {
     protected Logger logger = Logger.getLogger(this.getClass());
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private Environment environment;
+
+    @Value("${hello.msg:default}")
+    private String helloMsg;
 
     @RequestMapping(value = "/*", method = RequestMethod.GET)
     public ResponseEntity<String> pageNotFound() {
@@ -44,6 +54,8 @@ public class MainController {
     @RequestMapping(value="/welcome", method = RequestMethod.GET)
     public String welcome(Locale locale) {
         logger.debug(locale);
+        logger.debug(this.helloMsg);
+        String helloMsg = environment.getProperty("hello.msg");
         String curMsg = messageSource.getMessage("greeting.msg", null, "default", locale);
         String engMsg = messageSource.getMessage("greeting.msg", null, Locale.US);
         return "welcome";
