@@ -20,13 +20,17 @@
 
     <context:annotation-config/>
 
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
+    <!--
     <context:component-scan base-package="com.helloworld">
         <context:include-filter expression="org.springframework.stereotype.Service" type="annotation" />
         <context:include-filter expression="org.springframework.stereotype.Repository" type="annotation" />
     </context:component-scan>
+    -->
 
+    <!-- root-ApplicationContext에서는 component-scan을 하는데 context:exclude-filter를 통해 @Controller 만 제거하고 스캔 -->
+    <context:component-scan base-package="com.helloworld">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
 
 
 
@@ -61,8 +65,9 @@
         </tx:attributes>
     </tx:advice>
 
-
-
+    <!--
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    -->
 </beans>
 
 
