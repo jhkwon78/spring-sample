@@ -1,3 +1,6 @@
+
+
+
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns="http://www.springframework.org/schema/mvc"
@@ -15,7 +18,15 @@
              http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-    <context:component-scan base-package="com.helloworld.controller" />
+    <!--<context:component-scan base-package="com.helloworld" />-->
+
+
+    <!--servlet-ApplicationContext에서는 context:exclude-filter를 통해 @Controller만 스캔 
+    http://52.79.131.200/index.php/2016/03/24/root-context-and-servlet-context/
+    -->
+    <context:component-scan base-package="com.helloworld" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
 
     <mvc:annotation-driven />
 
