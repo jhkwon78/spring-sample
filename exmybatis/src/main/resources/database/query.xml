@@ -20,10 +20,11 @@
     </select>
 
     <resultMap id="user_result" type="com.exmybatis.domain.User">
-        <result property="user_id" column="user_id"/>
-        <result property="user_name" column="user_name"/>
-        <result property="user_email" column="user_email"/>
-        <result property="user_type" column="user_type"/>
+        <result property="no" column="user_no"/>
+        <result property="id" column="user_id"/>
+        <result property="name" column="user_name"/>
+        <result property="email" column="user_email"/>
+        <result property="type" column="user_type"/>
     </resultMap>
 
     <select id="getAllUser" resultMap="user_result">
@@ -31,10 +32,34 @@
         FROM users
     </select>
 
-    <select id="getPagingUserList" parameterType="hashmap" resultMap="user_result">
+    <select id="getPagingUserList" parameterType="hashMap" resultMap="user_result">
         SELECT *
         FROM users
+        <where>
+            <if test='user_id != null or user_id.equals("")'>
+            user_id like #{user_id}
+            </if>
+
+            <if test='user_no != null and !user_no.equals("")'>
+            AND user_no > #{user_no}
+            </if>
+        </where>
+        ORDER BY user_no ASC
         LIMIT #{offset}, #{noOfRecords}
+    </select>
+
+    <select id="getPagingUserListCount" parameterType="hashMap"  resultType="int">
+        SELECT count(*)
+        FROM users
+        <where>
+            <if test='user_id != null or user_id.equals("")'>
+             user_id like #{user_id}
+            </if>
+
+            <if test='user_no != null and !user_no.equals("")'>
+            AND user_no > #{user_no}
+            </if>
+        </where>
     </select>
 
     <select id="updateAdminName" parameterType="String">
@@ -47,12 +72,19 @@
         SELECT user_email
         FROM users
         WHERE user_id = #{user_id}
-        AND user_type = #{user_type}
+        <if test='user_type != null and !user_type.equals("")'>
+           AND user_type = #{user_type}
+        </if>
     </select>
 
     <insert id="insertAdmin" parameterType="String">
         INSERT INTO users (user_id, user_name, user_email, user_type)
         VALUES (#{user_id}, #{user_name}, #{user_email}, #{user_type})
     </insert>
+
+    <select id="selectAllUserCount" resultType="int">
+        SELECT count(*)
+        FROM users;
+    </select>
 </mapper>
 

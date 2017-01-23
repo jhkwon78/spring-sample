@@ -3,6 +3,7 @@ package com.exmybatis;
 import com.exmybatis.dao.MyDAO;
 import com.exmybatis.domain.User;
 import com.exmybatis.service.MyService;
+import com.exmybatis.util.Paging;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,8 +26,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 
 @Controller
@@ -85,9 +89,9 @@ public class MainController {
             return "login";
         }
 
-        if (user.getUserPassword().equalsIgnoreCase("admin")) {
-            modelMap.addAttribute("email", user.getEmailAddress());
-            session.setAttribute("email", user.getEmailAddress());
+        if (user.getPassword().equalsIgnoreCase("admin")) {
+            modelMap.addAttribute("email", user.getEmail());
+            session.setAttribute("email", user.getEmail());
             return "redirect:/welcome";
         }
 
@@ -101,26 +105,26 @@ public class MainController {
         return superAdmin;
     }
 
-    @RequestMapping(value = "/adminUserNameList", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/adminUserNameList", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public @ResponseBody List<String> getAdminUserNameList() throws SQLException {
         List<String> adminUserNameList = myDAO.getAdminUserNameList();
         logger.info(adminUserNameList);
         return adminUserNameList;
     }
 
-    @RequestMapping(value = "/allUserNameList", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/allUserNameList", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public @ResponseBody List<String> getAllUserNameList() throws SQLException {
         List<String> allUserNameList = myDAO.getAllUserNameList();
         return allUserNameList;
     }
 
-    @RequestMapping(value = "/updateUserName", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/updateUserName", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public @ResponseBody List<String> updateUserName() throws SQLException {
         myDAO.updateAdminName();
         return myDAO.getAllUserNameList();
     }
 
-    @RequestMapping(value = "/find", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/find", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody List<String> find() throws SQLException {
 
         List<String> userEmailList = myDAO.findAdminEMail();
@@ -128,13 +132,13 @@ public class MainController {
         return userEmailList;
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/user", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public @ResponseBody List<User> user() throws SQLException {
         List<User> allUsers = myDAO.getAllUser();
         return allUsers;
     }
 
-    @RequestMapping(value = "/pagingUser", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "/pagingUser", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public @ResponseBody List<User> pagingUser() throws SQLException {
         List<User> pagingUsers = myDAO.getPagingUserList(2, 3);
         logger.info(pagingUsers);
@@ -147,6 +151,50 @@ public class MainController {
         myService.saveAdmins();
 
         return "err";
+    }
+
+    @RequestMapping(value = "/getAllUserCount", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+    public @ResponseBody String getAllUserCount() throws Exception {
+
+
+        /// 전체 게시물
+        /// 페이지당 보여질 게시물 수 : 5
+        /// 전체 페이지수 : 전체 게시물 / 페이지당 보여질 게시물 수
+        /// Pagination 숫자 : 10
+
+
+
+
+
+
+
+        return Integer.toString(myDAO.getAllUserCount());
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ModelAndView list(@RequestParam HashMap<String, String> paramMap) throws Exception {
+
+        int totalCount = myDAO.getPagingUserListCount();
+        String page = (String)paramMap.get("page");
+
+        if (page == null || page.isEmpty()) {
+            page = "1";
+        }
+
+        Paging paging = new Paging();
+        paging.setPageNo(Integer.parseInt(page));
+        paging.setPageSize(7);
+        paging.setPagingBlockCount(20);
+        paging.setTotalCount(totalCount);
+
+        logger.info(paging.toString());
+        int startOffset = (paging.getPageNo() - 1) * paging.getPageSize();
+        List<User> users = myDAO.getPagingUserList(startOffset, paging.getPageSize());
+
+        ModelAndView model = new ModelAndView("list");
+        model.addObject("paging", paging);
+        model.addObject("users", users);
+        return model;
     }
 }
 

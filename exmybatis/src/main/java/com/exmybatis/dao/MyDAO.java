@@ -23,15 +23,33 @@ public class MyDAO {
     }
 
     public List<User> getAllUser() throws SQLException {
+
         return sqlSession.selectList("db.getAllUser");
     }
 
+    public int getAllUserCount() throws SQLException {
+
+        int allUserCount = sqlSession.selectOne("db.selectAllUserCount");
+        return allUserCount;
+    }
+
+    public int getPagingUserListCount() throws SQLException {
+        HashMap param = new HashMap<String, Object>();
+
+        param.put("user_no", new Long(10));
+        param.put("user_id", "id11%");
+
+        int allUserCount = sqlSession.selectOne("db.getPagingUserListCount", param);
+        return allUserCount;
+    }
+
     public List<User> getPagingUserList(long offset, long noOfRecords) throws SQLException {
-        Map<String, Long> param = new HashMap<String, Long>();
+        HashMap param = new HashMap<String, Object>();
 
-        param.put("offset", new Long(offset));
+        param.put("offset",  new Long(offset));
         param.put("noOfRecords", new Long(noOfRecords));
-
+        param.put("user_no", new String("10"));
+        param.put("user_id", "id11%");
         return sqlSession.selectList("db.getPagingUserList", param);
     }
 
@@ -58,8 +76,8 @@ public class MyDAO {
 
     public List<String> findAdminEMail() throws SQLException {
         User admin = new User();
-        admin.setUserId("root");
-        admin.setUserType("ADMIN");
+        admin.setId("root");
+        admin.setType("ADMIN");
         List<String> adminEmails = sqlSession.selectList("db.findAdminEMail", admin);
         return adminEmails;
     }

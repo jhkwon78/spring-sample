@@ -1,60 +1,64 @@
 package com.exmybatis.domain;
 
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 public class User {
-    String user_email;
-    String user_name;
-    String user_type;
-    String user_id;
-    String user_password;
+    int no;
+    String email;
+    String name;
+    String type;
+    String id;
+    String password;
 
-    public void setUserId(String user_id) {
-        this.user_id = user_id;
+    public void setNo(int no) {
+        this.no = no;
     }
 
-    public String getUserId() {
-        return this.user_id;
+    public int getNo() {
+        return this.no;
     }
 
-    public String getEmailAddress() {
-        return this.user_email;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setEmailAddress(String user_email) {
-        this.user_email = user_email;
+    public String getId() {
+        return this.id;
     }
 
-    public String getUserName() {
-        return this.user_name;
+    public String getEmail() {
+        return this.email;
     }
 
-    public void setUserName(String user_name) {
-        this.user_name = user_name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setUserType(String user_type) {
-        this.user_type = user_type;
+    public String getName() {
+        return this.name;
     }
 
-    public String getUserType() {
-        return this.user_type;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setUserPassword(String user_password) {
-        this.user_password = user_password;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getUserPassword() {
-        return this.user_password;
+    public String getType() {
+        return this.type;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     @Override
     public String toString() {
-        return this.user_id + "," + this.user_name + "," + this.user_email;
+        return this.id + "," + this.name + "," + this.email;
     }
 }
 
